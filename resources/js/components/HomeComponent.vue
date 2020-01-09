@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-card
-    max-width="344"
     outlined
   >
     <v-list-item three-line>
@@ -18,7 +17,7 @@
         <div class="text-center">
           <v-switch v-model="sorting.seeAnimation" label="See Animation"></v-switch>
         </div>
-        <v-slider min="25" max="400" v-model="length" @change="generateArray()"></v-slider>
+        <v-slider min="25" max="70" v-model="length" @change="generateArray()"></v-slider>
         {{length}} Numbers
       </v-list-item-content>
     </v-list-item>
@@ -26,29 +25,14 @@
     <v-card-actions>
       <v-btn v-if="sorting.status == 'not_sorting' || sorting.status == 'finished_sorting' || sorting.status=='stopped_sorting'" small color="success" v-on:click="startSorting()">Start sorting</v-btn>
       <v-btn v-if="sorting.status == 'sorting'" small color="error" v-on:click="stopSorting()">Stop sorting</v-btn>
-      <span v-if="getTimeElapsed()" class="caption font-weight-bold" :class="{
+      <span v-if="sorting.status != 'not_sorting'" class="overline font-weight-bold" :class="{
         'red--text': sorting.status == 'stopped_sorting',
-        'green--text': sorting.status == 'finished_sorting'}">{{`<${Math.floor(getTimeElapsed()/1000)}s ${getTimeElapsed()%1000} ms>`}}</span>
+        'green--text': sorting.status == 'finished_sorting'}">{{`<${Math.floor(getTimeElapsed()/1000)} s ${getTimeElapsed()%1000} ms>`}}</span>
     </v-card-actions>
-  </v-card>
-  <v-container fluid>
-    <v-row>
-      <v-col cols="12">
-      </v-col>
-    </v-row>
-    <svg width="550" :height="height">
-      <g transform="translate(40,20)">
-        <rect v-for="(number, index) in numbers"
-        :class="{'focus' : highlited.includes(index)}"
-        :ref="'column-'+index"
-        class="bar"
-        :x="(0.9*width/numbers.length)*index"
-        :width="0.7*width/numbers.length"
-        :height="getHeight(number)">
-        </rect>
-      </g>
-    </svg>
-  </v-container>
+  <v-card-text>
+    <my-column-chart :numbers="numbers" :highlighted="highlighted"/>
+  </v-card-text>
+</v-card>
   </div>
 </template>
 
@@ -56,33 +40,20 @@
   import BubbleSort from '../helpers/bubbleSort.js';
   import InsertionSort from '../helpers/insertionSort.js';
   import SortingHandler from '../helpers/sortingHandler.js';
+  import MyColumnChart from './MyColumnChart.vue';
 
   const HomeComponent = {
     name: 'HomeComponent',
     data(){
       return {
         sorting: {
-          algorithm: "BubbleSort",
+          algorithm: "InsertionSort",
           status: 'not_sorting',
-          seeAnimation: false,
+          seeAnimation: true,
           time: 0
         },
-        width: 500,
-        height: 800,
-        numbers: [],
-        highlited:[],
-        length: 50,
-        generateArray(){
-          // this.stopSorting('stopped_sorting');
-          let arr = Array.from({length:this.length}, () => { return Math.floor(Math.random()*1000)});
-          this.numbers = arr;
-        },
-        getHeight(n){
-          return n/Math.max.apply(null,this.numbers)*400;
-        },
-        highlight(numbers){
-          return this.highlited = numbers;
-        },
+        highlighted: [],
+        length: 100,
         startSorting(){
           let sortingHandler = new SortingHandler(this);
           this.sorting.starting_time = new Date();
@@ -92,22 +63,10 @@
             this.sort = new InsertionSort(this.numbers, sortingHandler, this.sorting.seeAnimation);
           }
         },
-        switchNumbers(numbers){
-          let i = numbers[0];
-          let j = numbers[1];
-          let aux = this.numbers[i];
-          this.numbers[i] = this.numbers[j];
-          this.numbers[j] = aux;
-          return this.numbers = this.numbers.slice();
-        },
-        updateNumbers(arr){
-          return this.numbers = arr.slice();
-        },
         chooseAlgorithm(name){
           return this.sorting.algorithm = name;
         },updateStatus(name){
           if(name == 'finished_sorting' || name == 'stopped_sorting'){
-            let time = this.getTimeElapsed();
             this.sorting.time_elapsed = this.getTimeElapsed();
           }
           return this.sorting.status = name;
@@ -121,7 +80,17 @@
           }else{
             return this.sorting.time_elapsed;
           }
-        }
+        },
+        generateArray(){
+          let arr = Array.from({length:this.length}, () => { return Math.floor(Math.random()*1000)});
+          this.numbers = arr;
+        },
+        highlight(numbers){
+          return this.highlighted = numbers;
+        },
+        updateNumbers(arr){
+          return this.numbers = arr.slice();
+        },
       };
     },
     created(){
@@ -129,32 +98,9 @@
     }
   }
   export default HomeComponent;
+  // export default {components:MyColumnChart};
 </script>
 
 <style scoped>
-h1 {
-  font: 24px sans-serif;
-}
-.bar {
-  fill: #4EA2B5;
-}
 
-.bar.focus {
-  fill: #7BE8C0;
-}
-
-.axis {
-  font: 10px sans-serif;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.x.axis path {
-  display: none;
-}
 </style>

@@ -39,8 +39,7 @@ export default class InsertionSort extends Sort{
       }
     }
     if(i == this.arr.length){
-      this.sortingHandler.update({type: 'highlight', data: []});
-      this.sortingHandler.update({type:"updateStatus", data:'not_sorting'});
+      this.stopSorting();
     }
   }
 }

@@ -7,7 +7,12 @@ export default class BubbleSort extends Sort{
   delayedLoop(i, repeated_times){
     this.sortingHandler.update({type:'highlight',data:[i,i+1]});
     // this.sortingHandler.highlight([i,i+1]);
-    if(this.arr[i] > this.arr[i+1]) this.arr = this.sortingHandler.update({type:"switchNumbers", data:[i,i+1]});
+    if(this.arr[i] > this.arr[i+1]) {
+      let aux = this.arr[i];
+      this.arr[i] = this.arr[i+1];
+      this.arr[i+1] = aux;
+      this.arr = this.sortingHandler.update({type:"updateNumbers", data:this.arr});
+    }
     if(++i < this.arr.length-1-repeated_times){
       this.callLoop(i, repeated_times);
     }else if(repeated_times < this.arr.length-1){
