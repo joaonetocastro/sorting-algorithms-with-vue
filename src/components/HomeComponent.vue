@@ -28,7 +28,7 @@
       <span v-if="sorting.status != 'not_sorting'" class="overline font-weight-bold" :class="{
         'red--text': sorting.status == 'stopped_sorting',
         'green--text': sorting.status == 'finished_sorting'}">
-        <!-- {{`<${Math.floor(getTimeElapsed()/1000)} s ${getTimeElapsed()%1000} ms>`}} -->
+        <span v-html="'\<'"></span>{{`${Math.floor(getTimeElapsed()/1000)} s ${getTimeElapsed()%1000} ms>`}}
         </span>
     </v-card-actions>
   <v-card-text>
