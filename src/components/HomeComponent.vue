@@ -89,6 +89,9 @@
           }
         },
         generateArray(){
+          if(Object.keys(this).includes('sort') && this.sort.continueSorting){
+            return;
+          }
           let arr = Array.from({length:this.length}, () => { return Math.floor(Math.random()*1000)});
           this.numbers = arr;
         },
